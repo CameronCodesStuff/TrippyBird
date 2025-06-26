@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Trippy Flappy Bird</title>
+    <title>TrippyBird</title>
+    <link rel="icon" href="/icon.png" type="image/png" />
     <style>
         body {
             margin: 0;
@@ -128,7 +129,6 @@
             color: #00ffff;
         }
     </style>
-    <!-- Import Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 </head>
@@ -159,7 +159,6 @@
     </div>
 
     <script>
-        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyA4nd3RcrbQju4WlUa0bjMiCZ51QjFezLg",
             authDomain: "leaderboard-d7eed.firebaseapp.com",
@@ -171,12 +170,10 @@
             measurementId: "G-0MSJYXS5PY"
         };
 
-        // Initialize Firebase
         const app = firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const scoresRef = database.ref('scores');
 
-        // Game elements
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreElement = document.getElementById('score');
@@ -189,11 +186,9 @@
         const finalScoreElement = document.getElementById('final-score');
         const highScoreValueElement = document.getElementById('high-score-value');
 
-        // Set canvas size
         canvas.width = 800;
         canvas.height = 600;
 
-        // Game variables
         let gameStarted = false;
         let gameOver = false;
         let score = 0;
@@ -205,7 +200,6 @@
         let highScores = [];
         const LEADERBOARD_SIZE = 20;
 
-        // Bird variables
         const bird = {
             x: 150,
             y: 300,
@@ -217,14 +211,12 @@
             wobble: 0
         };
 
-        // Pipes variables
         let pipes = [];
         const pipeWidth = 80;
         const pipeGap = 200;
         let pipeTimer = 0;
-        const pipeInterval = 1500; // milliseconds
+        const pipeInterval = 1500; 
 
-        // Background elements
         let backgroundElements = [];
         for (let i = 0; i < 20; i++) {
             backgroundElements.push({
@@ -236,7 +228,6 @@
             });
         }
 
-        // Initialize background particles
         for (let i = 0; i < 100; i++) {
             backgroundParticles.push({
                 x: Math.random() * canvas.width,
@@ -248,7 +239,6 @@
             });
         }
 
-        // Event listeners
         canvas.addEventListener('click', () => {
             if (gameStarted && !gameOver) {
                 bird.velocity = bird.jump;
@@ -271,7 +261,6 @@
             }
         });
 
-        // Leaderboard functions
         function toggleLeaderboard() {
             leaderboardVisible = !leaderboardVisible;
             leaderboardElement.style.display = leaderboardVisible ? 'block' : 'none';
@@ -288,10 +277,8 @@
                     highScores.push(childSnapshot.val());
                 });
                 
-                // Sort in descending order
                 highScores.sort((a, b) => b.score - a.score);
                 
-                // Update the leaderboard display
                 updateLeaderboardDisplay();
             });
         }
@@ -358,7 +345,7 @@
                         alert("Error submitting score. Please try again.");
                     } else {
                         hideNameInput();
-                        loadLeaderboard(); // Refresh the leaderboard
+                        loadLeaderboard(); 
                     }
                 });
             } else {
@@ -367,16 +354,13 @@
         }
 
         function checkHighScore() {
-            // Only show name input if:
-            // 1. There are fewer than 20 scores, or
-            // 2. The current score is higher than the lowest score in the top 20
+           
             if (highScores.length < LEADERBOARD_SIZE || 
                 score > highScores[highScores.length - 1].score) {
                 showNameInput();
             }
         }
 
-        // Game functions
         function startGame() {
             gameStarted = true;
             gameOver = false;
@@ -410,7 +394,6 @@
             gameOverElement.style.display = 'block';
             createParticles(bird.x, bird.y, 50, '#ff0000');
             
-            // Check if score qualifies for leaderboard
             checkHighScore();
         }
 
@@ -492,7 +475,6 @@
                 ctx.fillStyle = `hsl(${element.hue}, 100%, 50%)`;
                 ctx.globalAlpha = 0.2;
                 
-                // Draw random shapes
                 if (Math.random() > 0.5) {
                     ctx.beginPath();
                     ctx.arc(element.x, element.y, element.size, 0, Math.PI * 2);
@@ -508,15 +490,12 @@
             bird.velocity += bird.gravity;
             bird.y += bird.velocity;
             
-            // Wobble effect
             if (bird.wobble > 0) {
                 bird.wobble -= 0.5;
             }
             
-            // Rotation based on velocity
             bird.rotation = bird.velocity * 3;
             
-            // Check collision with ground or ceiling
             if (bird.y + bird.radius > canvas.height || bird.y - bird.radius < 0) {
                 endGame();
             }
@@ -527,7 +506,6 @@
             ctx.translate(bird.x, bird.y);
             ctx.rotate((bird.rotation + Math.sin(frameCount * 0.1) * bird.wobble * 0.1) * Math.PI / 180);
             
-            // Draw the bird with crazy colors
             const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, bird.radius);
             gradient.addColorStop(0, `hsl(${(hue + 120) % 360}, 100%, 50%)`);
             gradient.addColorStop(1, `hsl(${hue % 360}, 100%, 50%)`);
@@ -535,12 +513,10 @@
             ctx.fillStyle = gradient;
             ctx.beginPath();
             
-            // Wobbly bird shape
             const wobbleFactor = Math.sin(frameCount * 0.2) * bird.wobble * 0.1;
             ctx.ellipse(0, 0, bird.radius + wobbleFactor, bird.radius - wobbleFactor, 0, 0, Math.PI * 2);
             ctx.fill();
             
-            // Eye
             ctx.fillStyle = 'white';
             ctx.beginPath();
             ctx.arc(bird.radius * 0.5, -bird.radius * 0.2, bird.radius * 0.3, 0, Math.PI * 2);
@@ -551,7 +527,6 @@
             ctx.arc(bird.radius * 0.5, -bird.radius * 0.2, bird.radius * 0.1, 0, Math.PI * 2);
             ctx.fill();
             
-            // Beak
             ctx.fillStyle = 'orange';
             ctx.beginPath();
             ctx.moveTo(bird.radius * 0.8, 0);
@@ -564,8 +539,7 @@
         }
 
         function updatePipes() {
-            // Add new pipes
-            pipeTimer += 16; // assuming 60fps
+            pipeTimer += 16; 
             if (pipeTimer > pipeInterval && !gameOver) {
                 const gapPosition = Math.random() * (canvas.height - pipeGap - 100) + 50;
                 pipes.push({
@@ -577,16 +551,13 @@
                 pipeTimer = 0;
             }
 
-            // Update pipe positions
             for (let i = pipes.length - 1; i >= 0; i--) {
                 pipes[i].x -= 3;
 
-                // Check if pipe is off screen
                 if (pipes[i].x < -pipeWidth) {
                     pipes.splice(i, 1);
                 }
 
-                // Check if bird passed the pipe
                 if (!pipes[i].passed && pipes[i].x + pipeWidth < bird.x) {
                     pipes[i].passed = true;
                     score++;
@@ -594,7 +565,6 @@
                     createParticles(pipes[i].x + pipeWidth/2, pipes[i].gapY + pipeGap/2, 20, pipes[i].color);
                 }
 
-                // Check collision with pipes
                 if (
                     bird.x + bird.radius > pipes[i].x && 
                     bird.x - bird.radius < pipes[i].x + pipeWidth && 
@@ -607,10 +577,8 @@
 
         function drawPipes() {
             for (const pipe of pipes) {
-                // Wavy pipe effect
                 const waveOffset = Math.sin(frameCount * 0.1 + pipe.x * 0.01) * 10;
                 
-                // Top pipe
                 ctx.fillStyle = pipe.color;
                 ctx.globalAlpha = 0.7;
                 ctx.beginPath();
@@ -621,7 +589,6 @@
                 ctx.closePath();
                 ctx.fill();
                 
-                // Bottom pipe
                 ctx.beginPath();
                 ctx.moveTo(pipe.x, pipe.gapY + pipeGap + waveOffset);
                 ctx.lineTo(pipe.x + pipeWidth, pipe.gapY + pipeGap - waveOffset);
@@ -630,7 +597,6 @@
                 ctx.closePath();
                 ctx.fill();
                 
-                // Pipe edges
                 ctx.globalAlpha = 1;
                 ctx.fillStyle = `hsl(${(hue + 180) % 360}, 100%, 50%)`;
                 ctx.fillRect(pipe.x, pipe.gapY + waveOffset, pipeWidth, 20);
@@ -639,7 +605,6 @@
         }
 
         function drawBackground() {
-            // Trippy gradient background
             const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
             gradient.addColorStop(0, `hsl(${hue % 360}, 100%, 20%)`);
             gradient.addColorStop(0.5, `hsl(${(hue + 120) % 360}, 100%, 30%)`);
@@ -648,7 +613,6 @@
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Draw pulsing grid
             ctx.strokeStyle = `hsla(${(hue + 180) % 360}, 100%, 50%, 0.2)`;
             ctx.lineWidth = 1 + Math.sin(frameCount * 0.05) * 0.5;
             
@@ -696,7 +660,6 @@
             requestAnimationFrame(animate);
         }
 
-        // Initial setup
         loadLeaderboard();
         animate();
     </script>
